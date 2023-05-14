@@ -136,10 +136,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # session settings
 SESSION_COOKIE_AGE = 1209600
 
-import dj_database_url
-
-# DATABASES['default'] = dj_database_url.parse(
-#     "postgres://harahjatxlmhve:14b899225681ca5e1ce3b057093266e475441e10b9379695076968a4ee5233b1@ec2-44-206-204-65.compute-1.amazonaws.com:5432/d4h2p3ad3ke7e9")
-
 if env_utils.is_production():
     from lang2SQL.production_settings import *

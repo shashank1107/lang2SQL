@@ -138,6 +138,3 @@ tailwind/package-lock.json
 
 # sqlite db file
 db.sqlite3
-
-# excluding static files
-static
