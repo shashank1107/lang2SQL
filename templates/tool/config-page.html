@@ -1,0 +1,111 @@
+{% extends 'tool/base-template.html' %}
+
+{% block main-body %}
+    <div x-cloak x-data="db_config_data" class="min-h-full">
+        {% include "tool/components/header-nav.html" %}
+
+        <header class="bg-white shadow-sm">
+            <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+                <h1 x-text="header_text" class="text-lg font-semibold leading-6 text-gray-900">Heading</h1>
+            </div>
+        </header>
+        <main>
+            <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
+                {% include 'tool/components/db-connect-form.html' %}
+                {% include 'tool/components/db-select-tables-form.html' %}
+            </div>
+        </main>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('db_config_data', () => ({
+                page_ref: "config_page",
+                header_text: "Connect Your Database",
+                loading: false,
+                error_text: null,
+                query_result: null,
+                db_url_input_enable: true,
+                db_tables: null,
+                formData: {
+                    db_url: null,
+                    selected_db_tables_idx: [],
+                    selected_db_tables: []
+                },
+                toggle(id) {
+                    if (this.formData.selected_db_tables_idx.includes(id)) {
+                        const index = this.formData.selected_db_tables_idx.indexOf(id);
+                        this.formData.selected_db_tables_idx.splice(index, 1)
+                    } else {
+                        this.formData.selected_db_tables_idx.push(id)
+                    }
+                },
+
+                configureLLMModelWithTables() {
+                    let selected_db_tables_idx = this.formData.selected_db_tables_idx;
+                    if (selected_db_tables_idx.length === 0) {
+                        this.error_text = "Please select at least one table";
+                        return;
+                    }
+                    let ref = this;
+                    selected_db_tables_idx.forEach(table_idx => {
+                        ref.formData.selected_db_tables.push(ref.db_tables[table_idx]);
+                    })
+                    this.loading = true;
+                    this.error_text = null;
+                    fetch('{% url "tool:api-v1-configure" %}', {
+                        method: 'POST',
+                        body: JSON.stringify(this.formData),
+                        headers: {
+                            'Content-type': 'application/json; charset=UTF-8',
+                            "X-CSRFToken": "{{ csrf_token }}"
+                        },
+                    }).then((response) => {
+                        response.json().then(data => {
+                            ref.loading = false;
+                            if (data.config_success) window.location.href = "{% url 'tool:tool-query' %}";
+                            else ref.error_text = "Something went wrong! Pease try again.";
+                        }).catch(error => {
+                            ref.loading = false;
+                            ref.error_text = 'Invalid form input! ' + response;
+                        });
+                    }).catch((error) => {
+                        ref.loading = false;
+                        ref.error_text = 'Invalid form input! ' + error;
+                    });
+                },
+
+                configureDBURL() {
+                    let ref = this;
+                    this.loading = true;
+                    this.error_text = null;
+                    fetch('{% url "tool:api-v1-configure" %}', {
+                        method: 'POST',
+                        body: JSON.stringify(this.formData),
+                        headers: {
+                            'Content-type': 'application/json; charset=UTF-8',
+                            "X-CSRFToken": "{{ csrf_token }}"
+                        },
+                    }).then((response) => {
+                        response.json().then(data => {
+                            console.log(data);
+                            ref.loading = false;
+                            ref.db_tables = data;
+                            ref.db_url_input_enable = false;
+                        }).catch(error => {
+                            ref.loading = false;
+                            ref.error_text = 'Invalid form input! ' + response;
+                        });
+                    }).catch((error) => {
+                        ref.loading = false;
+                        ref.error_text = 'Invalid form input! ' + error;
+                    });
+                }
+            }))
+        });
+    </script>
+{% endblock %}

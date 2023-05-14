@@ -1,0 +1,20 @@
+<div class="mx-6 mt-2">
+    <div x-show="query_result.result_text" class="flex items-start justify-start">
+        <div class="mt-3 w-full">
+            <div class="border-t border-gray-100 px-4 py-2 sm:col-span-2 sm:px-0">
+                <dt class="text-md font-medium leading-6 text-gray-900">Result</dt>
+                <dd x-text="query_result.result_text"
+                    class="mt-1 text-sm leading-6 text-gray-700 sm:mt-2"></dd>
+            </div>
+        </div>
+    </div>
+    <div x-show="query_result.sql_query" class="flex items-start justify-start">
+        <div class="mt-3 w-full">
+            <div class="border-t border-gray-100 px-4 py-2 sm:col-span-2 sm:px-0">
+                <dt class="text-md font-medium leading-6 text-gray-900">SQL Query</dt>
+                <dd x-text="query_result.sql_query"
+                    class="mt-1 text-sm leading-6 text-gray-700 sm:mt-2"></dd>
+            </div>
+        </div>
+    </div>
+</div>

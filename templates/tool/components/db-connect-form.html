@@ -1,0 +1,61 @@
+<form x-show="!db_tables" class="mx-6">
+    <div class="space-y-12">
+        <div class="border-b border-gray-900/10 pb-12">
+            <p class="mt-1 text-sm leading-6 text-gray-600">Please make sure it is a public DB. Test with
+                staging DB first.</p>
+
+            <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                <div class="sm:col-span-4">
+                    <label for="db_url" class="block text-sm font-medium leading-6 text-gray-900">Enter DataBase
+                        URL</label>
+                    <div class="mt-2">
+                        <input x-bind:disabled="!db_url_input_enable" x-model="formData.db_url" id="db_url"
+                               name="db_url" type="url"
+                               placeholder="postgresql://<USERNAME>:<PASSWORD>@<HOSTNAME>:<PORT>/<DB_NAME>"
+                               class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+                {#                <div class="sm:col-span-4">#}
+                {#                    <label for="db_url" class="block text-sm font-medium leading-6 text-gray-900">Enter Database#}
+                {#                        HOST</label>#}
+                {#                    <div class="mt-2">#}
+                {#                        <input id="db_url" name="db_url" type="url"#}
+                {#                               class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">#}
+                {#                    </div>#}
+                {#                </div>#}
+                {#                <div class="sm:col-span-2">#}
+                {#                    <label for="db_port" class="block text-sm font-medium leading-6 text-gray-900">PORT</label>#}
+                {#                    <div class="mt-2">#}
+                {#                        <input id="db_port" name="db_port" type="number"#}
+                {#                               class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">#}
+                {#                    </div>#}
+                {#                </div>#}
+                {#                <div class="sm:col-span-3">#}
+                {#                    <label for="db_username" class="block text-sm font-medium leading-6 text-gray-900">Database#}
+                {#                        User</label>#}
+                {#                    <div class="mt-2">#}
+                {#                        <input type="text" name="db_username" id="db_username"#}
+                {#                               class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">#}
+                {#                    </div>#}
+                {#                </div>#}
+                {#                <div class="sm:col-span-3">#}
+                {#                    <label for="db_userpass" class="block text-sm font-medium leading-6 text-gray-900">Password</label>#}
+                {#                    <div class="mt-2">#}
+                {#                        <input type="password" name="db_userpass" id="db_userpass"#}
+                {#                               class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">#}
+                {#                    </div>#}
+                {#                </div>#}
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-6 flex items-center justify-start gap-x-6">
+        <button type="button" @click="configureDBURL"
+                class="rounded-md bg-gray-900 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                x-bind:class="{'bg-gray-400': loading }">
+            Connect Database
+        </button>
+        <p x-show="loading" class="text-sm text-red-500">Please wait. Connecting to Database...</p>
+        <p x-show="error_text" x-text="error_text" class="text-sm text-red-500"></p>
+    </div>
+</form>

@@ -1,0 +1,1 @@
+web: gunicorn lang2SQL.wsgi

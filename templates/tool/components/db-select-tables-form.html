@@ -1,0 +1,26 @@
+<div x-show="db_tables" class="mx-6 mt-5 space-y-10">
+    <label for="db_url" class="block text-md font-medium leading-6 text-gray-900">Select relevant tables for your
+        queries</label>
+    <table style="margin-top: 10px">
+        <template x-for="(table, index) in db_tables" :key="index">
+            <tbody>
+            <tr>
+                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
+                    <input type="checkbox" x-bind:value="index"
+                           x-model="formData.selected_db_tables_idx"/>
+                </td>
+                <td class="text-sm" x-text="table" @click="toggle(index)"></td>
+            </tr>
+            </tbody>
+        </template>
+    </table>
+
+    <button @click="configureLLMModelWithTables"
+            type="button"
+            class="rounded-md bg-gray-900 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            x-bind:class="{'bg-gray-400': loading }">
+        Configure Tables
+    </button>
+    <p x-show="loading" class="text-sm text-red-500">Please wait. Saving DB configurations...</p>
+    <p x-show="error_text" x-text="error_text" class="text-sm text-red-500"></p>
+</div>
