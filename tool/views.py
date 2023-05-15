@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.http import require_http_methods
@@ -5,6 +6,7 @@ from django.http import HttpResponseRedirect
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+
 
 from tool.models import SessionDBConfiguration
 from tool import services
@@ -31,13 +33,13 @@ def query_page_view(request):
 def configure_db(request):
     payload = request.data
     selected_tables = payload.get('selected_db_tables')
+    # handle default DB case
+    if payload.get('use_default_db'):
+        services.create_db_configuration(request.session.session_key, settings.SAMPLE_DATABASE)
+        return Response(status=status.HTTP_200_OK, data={'redirect': True})
+
     if selected_tables:
-        SessionDBConfiguration.objects.update_or_create(session_key=request.session.session_key, defaults={
-            'db_config': {
-                'db_url': payload['db_url'],
-                'selected_tables': selected_tables
-            }
-        })
+        services.create_db_configuration(request.session.session_key, payload['db_url'], selected_tables)
         return Response(status=status.HTTP_200_OK, data={'config_success': True})
     return Response(status=status.HTTP_200_OK, data=services.fetch_db_tables_from_url_postgres(payload))
 

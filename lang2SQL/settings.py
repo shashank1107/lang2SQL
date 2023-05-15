@@ -137,5 +137,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # session settings
 SESSION_COOKIE_AGE = 1209600
 
+SAMPLE_DATABASE = "sqlite:///" + os.path.join(BASE_DIR, "sample_db.sqlite")
+
+
 if env_utils.is_production():
     from lang2SQL.production_settings import *

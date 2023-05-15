@@ -33,6 +33,7 @@
                 db_tables: null,
                 formData: {
                     db_url: null,
+                    use_default_db: false,
                     selected_db_tables_idx: [],
                     selected_db_tables: []
                 },
@@ -68,7 +69,7 @@
                         response.json().then(data => {
                             ref.loading = false;
                             if (data.config_success) window.location.href = "{% url 'tool:tool-query' %}";
-                            else ref.error_text = "Something went wrong! Pease try again.";
+                            else ref.error_text = "Something went wrong! Please try again.";
                         }).catch(error => {
                             ref.loading = false;
                             ref.error_text = 'Invalid form input! ' + response;
@@ -93,6 +94,9 @@
                     }).then((response) => {
                         response.json().then(data => {
                             console.log(data);
+                            if (data.redirect) {
+                                window.location.href = "{% url 'tool:tool-query' %}";
+                            }
                             ref.loading = false;
                             ref.db_tables = data;
                             ref.db_url_input_enable = false;
@@ -104,6 +108,10 @@
                         ref.loading = false;
                         ref.error_text = 'Invalid form input! ' + error;
                     });
+                },
+                configureDefaultDBURL() {
+                    this.formData.use_default_db = true;
+                    this.configureDBURL();
                 }
             }))
         });

@@ -10,6 +10,15 @@ def fetch_db_tables_from_url_postgres(payload: dict):
     return list(map(lambda x: x[0], query_resp))
 
 
+def create_db_configuration(session_key, db_url, selected_tables=None):
+    SessionDBConfiguration.objects.update_or_create(session_key=session_key, defaults={
+        'db_config': {
+            'db_url': db_url,
+            'selected_tables': selected_tables
+        }
+    })
+
+
 def get_db_configuration(session_key):
     config = SessionDBConfiguration.objects.filter(session_key=session_key).first()
     if not config:
@@ -43,8 +52,12 @@ def langchain_sql_chain(config: SessionDBConfiguration, query):
     )
     llm = OpenAI(temperature=0)
     db_config = config.db_config
-    db = SQLDatabase.from_uri(db_config['db_url'], include_tables=db_config['selected_tables'],
-                              sample_rows_in_table_info=3)
+
+    kwargs = {}
+    selected_tables = db_config['selected_tables']
+    if selected_tables:
+        kwargs['include_tables'] = selected_tables
+    db = SQLDatabase.from_uri(db_config['db_url'], sample_rows_in_table_info=3, **kwargs)
 
     # db_chain = SQLDatabaseChain.from_llm(llm, db, prompt=PROMPT, verbose=True, return_intermediate_steps=True)
     db_chain = SQLDatabaseSequentialChain.from_llm(llm, db, verbose=True, return_intermediate_steps=True)
